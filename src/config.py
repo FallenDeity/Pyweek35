@@ -18,7 +18,6 @@ RGB = tuple[int, int, int]
 
 
 # Dimensions and title
-@dataclass
 class GameConfig:
     SCREEN_TITLE = "PyWeek35"
     SCREEN_HEIGHT = 600
