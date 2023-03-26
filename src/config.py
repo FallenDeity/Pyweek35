@@ -18,7 +18,6 @@ RGB = tuple[int, int, int]
 
 
 # Dimensions and title
-@dataclass
 class GameConfig:
     SCREEN_TITLE = "PyWeek35"
     SCREEN_HEIGHT = 600
@@ -70,7 +69,6 @@ class Primary(BaseStyle):
 
 
 # Arcade styled dicts
-@dataclass
 class ArcadeGameStyles:
     golden_tanoi = (GoldenTanoi()).as_dict()
     danger = (Danger()).as_dict()
@@ -78,7 +76,6 @@ class ArcadeGameStyles:
 
 
 # Paths
-@dataclass
 class Paths:
     PATH = pathlib.Path(__file__).resolve().parent.parent
     ASSET_PATH = PATH / "assets"
