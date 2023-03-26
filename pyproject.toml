@@ -7,6 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
+arcade = "^2.6.17"
 
 
 [tool.poetry.group.dev.dependencies]
@@ -14,6 +15,7 @@ black = "^23.1.0"
 isort = "^5.12.0"
 ruff = "^0.0.259"
 pre-commit = "^3.2.1"
+pyright = "^1.1.300"
 
 [build-system]
 requires = ["poetry-core"]
