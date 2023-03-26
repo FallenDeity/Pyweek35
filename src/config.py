@@ -77,7 +77,6 @@ class ArcadeGameStyles:
 
 
 # Paths
-@dataclass
 class Paths:
     PATH = pathlib.Path(__file__).resolve().parent.parent
     ASSET_PATH = PATH / "assets"
