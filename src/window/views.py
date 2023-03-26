@@ -66,7 +66,10 @@ class Menu(arcade.View):
     @assert_state(AssertAttrs.ui_v_box_message, AssertAttrs.ui_manager)
     def _on_click_how_to_play_button(self, event: arcade.gui.UIOnClickEvent):
         message_box = arcade.gui.UIMessageBox(
-            width=400, height=300, message_text="Welcome Good luck!", callback=self._how_to_play_callback
+            width=400,
+            height=300,
+            message_text="Welcome Good luck!",
+            callback=self._how_to_play_callback,
         )
 
         v_box_message = typing.cast(arcade.gui.UIBoxLayout, self.v_box_message)
@@ -150,10 +153,14 @@ class Game(arcade.View):
         self.debugging_console = arcade.gui.UIInputText(text=">", width=self.main_window.width, height=25)
         tex = arcade.texture.Texture("tex creator")
         self.debugging_console_tex_inp = tex.create_filled(
-            color=(100, 0, 0, 150), name="debug console in", size=(self.main_window.width, 25)
+            color=(100, 0, 0, 150),
+            name="debug console in",
+            size=(self.main_window.width, 25),
         )
         self.debugging_console_tex_out = tex.create_filled(
-            color=(0, 100, 0, 150), name="debug console out", size=(self.main_window.width, 25)
+            color=(0, 100, 0, 150),
+            name="debug console out",
+            size=(self.main_window.width, 25),
         )
         self.debugging_console_tex = self.debugging_console.with_background(self.debugging_console_tex_inp)
         self.v_box.add(self.debugging_console_tex)
@@ -180,7 +187,12 @@ class Game(arcade.View):
 
         self.tic = 0
 
-    @assert_state(AssertAttrs.camera, AssertAttrs.light_layer, AssertAttrs.game_scene, AssertAttrs.ui_manager)
+    @assert_state(
+        AssertAttrs.camera,
+        AssertAttrs.light_layer,
+        AssertAttrs.game_scene,
+        AssertAttrs.ui_manager,
+    )
     def on_draw(self):
         """Render the screen."""
         self.clear()
@@ -252,7 +264,10 @@ class Game(arcade.View):
                 out_tex = out.with_background(debugging_console_tex_out)
                 v_box.remove(debugging_console_tex)
                 prev = arcade.gui.UILabel(
-                    text=debugging_console.text, width=self.main_window.width, height=25, text_color=(0, 0, 0)
+                    text=debugging_console.text,
+                    width=self.main_window.width,
+                    height=25,
+                    text_color=(0, 0, 0),
                 )
                 prev_tex = prev.with_background(debugging_console_tex_inp)
                 v_box.add(prev_tex)
@@ -280,7 +295,7 @@ class Game(arcade.View):
         """Called when the mouse is dragged."""
         camera_sprite = typing.cast(arcade.Sprite, self.camera_sprite)
 
-        if INVERT_MOUSE:
+        if GameConfig.INVERT_MOUSE:
             camera_sprite.center_x -= dx
             camera_sprite.center_y -= dy
         else:
