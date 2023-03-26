@@ -70,7 +70,6 @@ class Primary(BaseStyle):
 
 
 # Arcade styled dicts
-@dataclass
 class ArcadeGameStyles:
     golden_tanoi = (GoldenTanoi()).as_dict()
     danger = (Danger()).as_dict()
