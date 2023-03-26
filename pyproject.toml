@@ -64,6 +64,7 @@ typeCheckingMode = "strict"
 reportImportCycles = true
 reportUnusedImport = true
 reportPrivateUsage = true
+reportPrivateImportUsage = false
 reportUnknownVariableType = true
 reportUnknownMemberType = false
 reportUnknownArgumentType = false

@@ -1,4 +1,9 @@
-from src.window.views import Game, Menu, WinLooseMenu
+from src.window.views import Game, Menu, WinLoseMenu
 from src.window.window import Window
 
-__all__ = ["Game", "Menu", "Window", "WinLooseMenu"]
+__all__: tuple[str, ...] = (
+    "Game",
+    "Menu",
+    "Window",
+    "WinLoseMenu",
+)
