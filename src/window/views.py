@@ -6,7 +6,7 @@ from arcade.experimental.lights import LightLayer
 from pyglet.math import Vec2  # type: ignore[reportMissingTypeStubs, reportUnknownVariableType]
 
 from src.config import ArcadeGameStyles, GameConfig, Paths
-from src.uitls import AssertAttrs
+from src.utils import AssertAttrs
 
 
 def assert_state(*args: typing.Any):
