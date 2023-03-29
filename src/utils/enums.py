@@ -20,20 +20,20 @@ class Styles(BaseEnum):
     GOLDEN_TANOI = Style(
         font_name="Dilo World",
         font_color=RGB(255, 207, 112),
-        bg_color=RGB(0, 140, 176),
-        border_color=RGB(0, 60, 75),
+        bg=RGB(0, 140, 176),
+        border=RGB(0, 60, 75),
     )
     DANGER = Style(
         font_color=RGB(255, 255, 255),
         border_width=2,
-        bg_color=RGB(217, 4, 41),
+        bg=RGB(217, 4, 41),
         bg_color_pressed=RGB(255, 166, 158),
         border_color_pressed=RGB(255, 166, 158),
     )
     PRIMARY = Style(
         font_color=RGB(255, 255, 255),
         border_width=2,
-        bg_color=RGB(0, 123, 255),
+        bg=RGB(0, 123, 255),
         bg_color_pressed=RGB(0, 110, 230),
         border_color_pressed=RGB(0, 110, 230),
     )

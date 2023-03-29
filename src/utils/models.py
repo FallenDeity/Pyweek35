@@ -27,8 +27,8 @@ class RGB(BaseModel):
 class Style(BaseModel):
     font_name: t.Optional[str] = None
     font_color: t.Optional[RGB] = None
-    bg_color: t.Optional[RGB] = None
-    border_color: t.Optional[RGB] = None
+    bg: t.Optional[RGB] = None
+    border: t.Optional[RGB] = None
     border_width: t.Optional[int] = None
     bg_color_pressed: t.Optional[RGB] = None
     border_color_pressed: t.Optional[RGB] = None

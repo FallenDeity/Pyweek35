@@ -1,5 +1,6 @@
 import typing as t
 
+
 import arcade
 import arcade.gui
 from arcade.experimental.lights import LightLayer
@@ -33,35 +34,64 @@ class Menu(arcade.View):
         self.v_box_message = arcade.gui.UIBoxLayout()
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-        play_button = arcade.gui.UIFlatButton(text="Play", width=200, style=Styles.GOLDEN_TANOI)
+
+        play_button = arcade.gui.UIFlatButton(
+            text="Play",
+            width=200,
+            style={
+                "normal": arcade.gui.UIFlatButton.UIStyle(**Styles.GOLDEN_TANOI),
+                "press": arcade.gui.UIFlatButton.UIStyle(),
+                "hover": arcade.gui.UIFlatButton.UIStyle(),
+                "disabled": arcade.gui.UIFlatButton.UIStyle(),
+            }
+        )
         play_button.on_click = self._on_click_play_button
-        how_to_play_button = arcade.gui.UIFlatButton(text="How to Play", width=200, style=Styles.GOLDEN_TANOI)
+        how_to_play_button = arcade.gui.UIFlatButton(
+            text="How to Play",
+            width=200,
+            style={
+                "normal": arcade.gui.UIFlatButton.UIStyle(**Styles.GOLDEN_TANOI),
+                "press": arcade.gui.UIFlatButton.UIStyle(),
+                "hover": arcade.gui.UIFlatButton.UIStyle(),
+                "disabled": arcade.gui.UIFlatButton.UIStyle(),
+            }
+        )
         how_to_play_button.on_click = self._on_click_how_to_play_button
-        exit_button = arcade.gui.UIFlatButton(text="Exit", width=200, style=Styles.GOLDEN_TANOI)
+        exit_button = arcade.gui.UIFlatButton(
+            text="Exit",
+            width=200,
+            style={
+                "normal": arcade.gui.UIFlatButton.UIStyle(**Styles.GOLDEN_TANOI),
+                "press": arcade.gui.UIFlatButton.UIStyle(),
+                "hover": arcade.gui.UIFlatButton.UIStyle(),
+                "disabled": arcade.gui.UIFlatButton.UIStyle(),
+            }
+        )
         exit_button.on_click = self._on_click_exit_button
+
         self.v_box.add(play_button)
         self.v_box.add(how_to_play_button)
         self.v_box.add(exit_button)
-        self.manager.add(arcade.gui.UIAnchorWidget(child=self.v_box))
+        self.manager.add(arcade.gui.UIAnchorLayout(children=(self.v_box,)))
 
     def _on_click_how_to_play_button(self, event: arcade.gui.UIOnClickEvent) -> None:
         message_box = arcade.gui.UIMessageBox(
             width=400,
             height=300,
             message_text="Welcome Good luck!",
-            callback=self._how_to_play_callback,
         )
+        message_box.on_action = self._how_to_play_callback
         v_box_message = t.cast(arcade.gui.UIBoxLayout, self.v_box_message)
         v_box_message.add(message_box)
         manager = t.cast(arcade.gui.UIManager, self.manager)
         manager.clear()
-        manager.add(arcade.gui.UIAnchorWidget(child=v_box_message))
+        manager.add(arcade.gui.UIAnchorLayout(children=(v_box_message,)))
 
-    def _how_to_play_callback(self, event: arcade.gui.UIOnClickEvent) -> None:
+    def _how_to_play_callback(self, event: arcade.gui.UIOnActionEvent) -> None:
         manager = t.cast(arcade.gui.UIManager, self.manager)
         v_box = t.cast(arcade.gui.UIBoxLayout, self.v_box)
         manager.clear()
-        manager.add(arcade.gui.UIAnchorWidget(child=v_box))
+        manager.add(arcade.gui.UIAnchorLayout(children=(v_box,)))
 
     def on_draw(self) -> None:
         """Called when this view should draw."""
@@ -72,6 +102,7 @@ class Menu(arcade.View):
 
     def _on_click_play_button(self, event: arcade.gui.UIOnClickEvent) -> None:
         game = Game(self.main_window)
+        game.setup()
         self.main_window.show_view(game)
 
     def _on_click_exit_button(self, event: arcade.gui.UIOnClickEvent) -> None:
@@ -105,19 +136,22 @@ class Game(arcade.View):
         self.debugging_console: t.Optional[arcade.gui.UIInputText] = None
         self.debugging_console_tex_inp: t.Optional[arcade.Texture] = None
         self.debugging_console_tex_out: t.Optional[arcade.Texture] = None
-        self.debugging_console_tex: t.Optional[arcade.gui.UITexturePane] = None
+        self.debugging_console_tex: t.Optional[arcade.gui.UIWidget] = None
         self.tic: int = 0
+
+        self.player_list: t.Optional[arcade.SpriteList[arcade.Sprite]] = None
+        self.wall_list: t.Optional[arcade.SpriteList[arcade.Sprite]] = None
 
     def on_show_view(self) -> None:
         """Called when the current is switched to this view."""
-        self.setup()
+        #self.setup()
 
     def setup(self) -> None:
         """Set up the game here. Call this function to restart the game."""
         self.manager = arcade.gui.UIManager()
         self.v_box = arcade.gui.UIBoxLayout()
         self.debugging_console = arcade.gui.UIInputText(text=">", width=self.main_window.width, height=25)
-        tex = arcade.texture.Texture("tex creator")
+        tex = arcade.texture.Texture.create_empty("tex creator", size=(GameConfig.SCREEN_WIDTH, GameConfig.SCREEN_HEIGHT))
         self.debugging_console_tex_inp = tex.create_filled(
             color=(100, 0, 0, 150),
             name="debug console in",
@@ -128,13 +162,12 @@ class Game(arcade.View):
             name="debug console out",
             size=(self.main_window.width, 25),
         )
-        self.debugging_console_tex = self.debugging_console.with_background(self.debugging_console_tex_inp)
+        self.debugging_console_tex = self.debugging_console.with_background(texture=self.debugging_console_tex_inp)
         self.v_box.add(self.debugging_console_tex)
-        self.manager.add(arcade.gui.UIAnchorWidget(child=self.v_box, anchor_y="bottom"))
+        self.manager.add(arcade.gui.UIAnchorLayout(children=(self.v_box,), anchor_y="bottom"))
         self.manager.enable()
         self.game_scene = arcade.Scene()
-        self.camera = arcade.Camera(self.main_window.width, self.main_window.height)
-        self.camera_sprite = arcade.Sprite((Paths.ASSETS / "tiles" / "pnj.png").as_posix())
+        self.camera = arcade.Camera(anchor=(self.main_window.width, self.main_window.height,))
         self.camera_sprite = arcade.Sprite((Paths.ASSETS / "tiles" / "pnj.png").as_posix())
         self.camera_sprite.center_x = 0
         self.camera_sprite.center_y = 0
@@ -142,6 +175,14 @@ class Game(arcade.View):
         self.physics_engine = arcade.PhysicsEnginePlatformer(self.camera_sprite, gravity_constant=0)
         self.light_layer = LightLayer(self.main_window.width, self.main_window.height)
         self.tic = 0
+
+        self.player_list = arcade.SpriteList()
+        self.wall_list = arcade.SpriteList(use_spatial_hash=True)
+
+        self.player_sprite = arcade.Sprite("C:\\Users\\XxHEROSOLDIERxX\\Desktop\\Pyweek35\\src\\assets\\tiles\\pnj.png")
+        self.player_sprite.center_x = 64
+        self.player_sprite.center_y = 128
+        self.player_list.append(self.player_sprite)
 
     def on_draw(self) -> None:
         """Render the screen."""
@@ -159,12 +200,15 @@ class Game(arcade.View):
         if self.console_active:
             manager.draw()
 
+        assert self.player_list
+        self.player_list.draw()
+
     def on_key_press(self, symbol: int, modifiers: int) -> None:
         """Called whenever a key is pressed."""
         camera_sprite = t.cast(arcade.Sprite, self.camera_sprite)
         manager = t.cast(arcade.gui.UIManager, self.manager)
         debugging_console = t.cast(arcade.gui.UIInputText, self.debugging_console)
-        debugging_console_tex = t.cast(arcade.gui.UITexturePane, self.debugging_console_tex)
+        debugging_console_tex = t.cast(arcade.gui.UIWidget, self.debugging_console_tex)
         debugging_console_tex_inp = t.cast(arcade.Texture, self.debugging_console_tex_inp)
         debugging_console_tex_out = t.cast(arcade.Texture, self.debugging_console_tex_out)
         v_box = t.cast(arcade.gui.UIBoxLayout, self.v_box)
@@ -187,7 +231,7 @@ class Game(arcade.View):
             if debugging_console.text[1:] in ("clear", "cls"):
                 v_box.clear()
                 self.debugging_console = arcade.gui.UIInputText(text=">", width=self.main_window.width, height=25)
-                self.debugging_console_tex = self.debugging_console.with_background(debugging_console_tex_inp)
+                self.debugging_console_tex = self.debugging_console.with_background(texture=debugging_console_tex_inp)
                 v_box.add(self.debugging_console_tex)
             else:
                 out = arcade.gui.UILabel(
@@ -196,7 +240,7 @@ class Game(arcade.View):
                     height=25,
                     text_color=(255, 255, 255),
                 )
-                out_tex = out.with_background(debugging_console_tex_out)
+                out_tex = out.with_background(texture=debugging_console_tex_out)
                 v_box.remove(debugging_console_tex)
                 prev = arcade.gui.UILabel(
                     text=debugging_console.text,
@@ -204,11 +248,11 @@ class Game(arcade.View):
                     height=25,
                     text_color=(0, 0, 0),
                 )
-                prev_tex = prev.with_background(debugging_console_tex_inp)
+                prev_tex = prev.with_background(texture=debugging_console_tex_inp)
                 v_box.add(prev_tex)
                 v_box.add(out_tex)
                 self.debugging_console = arcade.gui.UIInputText(text=">", width=self.main_window.width, height=25)
-                self.debugging_console_tex = self.debugging_console.with_background(debugging_console_tex_inp)
+                self.debugging_console_tex = self.debugging_console.with_background(texture=debugging_console_tex_inp)
                 v_box.add(self.debugging_console_tex)
 
     def on_key_release(self, key: int, _: t.Any) -> None:
@@ -283,15 +327,44 @@ class WinLoseMenu(arcade.View):
         self.v_box = arcade.gui.UIBoxLayout(space_between=10)
         self.manager = arcade.gui.UIManager()
         self.manager.enable()
-        exit_button = arcade.gui.UIFlatButton(text="Exit", width=200, style=Styles.GOLDEN_TANOI)
+        
+        exit_button = arcade.gui.UIFlatButton(
+            text="Exit",
+            width=200,
+            style={
+                "normal": arcade.gui.UIFlatButton.UIStyle(**Styles.GOLDEN_TANOI),
+                "press": arcade.gui.UIFlatButton.UIStyle(),
+                "hover": arcade.gui.UIFlatButton.UIStyle(),
+                "disabled": arcade.gui.UIFlatButton.UIStyle(),
+            }
+        )
         exit_button.on_click = self._on_click_exit_button
-        restart_button = arcade.gui.UIFlatButton(text="Restart", width=200, style=Styles.GOLDEN_TANOI)
+        restart_button = arcade.gui.UIFlatButton(
+            text="Restart",
+            width=200,
+            style={
+                "normal": arcade.gui.UIFlatButton.UIStyle(**Styles.GOLDEN_TANOI),
+                "press": arcade.gui.UIFlatButton.UIStyle(),
+                "hover": arcade.gui.UIFlatButton.UIStyle(),
+                "disabled": arcade.gui.UIFlatButton.UIStyle(),
+            }
+        )
         restart_button.on_click = self._on_click_restart_button
-        win_loose_button = arcade.gui.UIFlatButton(text=self.win_loose_message, width=200, style=Styles.GOLDEN_TANOI)
+        win_loose_button = arcade.gui.UIFlatButton(
+            text=self.win_loose_message,
+            width=200,
+            style={
+                "normal": arcade.gui.UIFlatButton.UIStyle(**Styles.GOLDEN_TANOI),
+                "press": arcade.gui.UIFlatButton.UIStyle(),
+                "hover": arcade.gui.UIFlatButton.UIStyle(),
+                "disabled": arcade.gui.UIFlatButton.UIStyle(),
+            }
+        )
+        
         self.v_box.add(win_loose_button)
         self.v_box.add(restart_button)
         self.v_box.add(exit_button)
-        self.manager.add(arcade.gui.UIAnchorWidget(child=self.v_box))
+        self.manager.add(arcade.gui.UIAnchorLayout(children=(self.v_box,)))
 
     def on_draw(self) -> None:
         """Called when this view should draw."""
