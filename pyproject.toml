@@ -7,7 +7,7 @@ readme = "README.md"
 
 [tool.poetry.dependencies]
 python = "^3.11"
-arcade = "3.0.0.dev18"
+arcade = "3.0.0.dev19"
 
 
 [tool.poetry.group.dev.dependencies]
